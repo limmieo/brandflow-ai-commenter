@@ -14,7 +14,7 @@ def home():
 def reply():
     data = request.get_json()
     message = data.get("message")
-    brand = data.get("brand", "yumi")
+    brand = data.get("brand", "default")
 
     if not message:
         return jsonify({"error": "Missing message"}), 400
