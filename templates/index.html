@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auto Responder</title>
+</head>
+<body>
+  <h1>Test Auto-Reply</h1>
+  <form id="responderForm">
+    <label>Brand:
+      <select name="brand">
+        <option value="yumi">Yumi</option>
+        <option value="gym_baddie">Gym Baddie</option>
+        <option value="polishedform">PolishedForm</option>
+      </select>
+    </label><br><br>
+    <textarea name="message" placeholder="Paste DM or comment..." rows="5" cols="50"></textarea><br>
+    <button type="submit">Get Reply</button>
+  </form>
+  <p><strong>Generated Reply:</strong> <span id="replyOutput"></span></p>
+
+  <script>
+    document.getElementById('responderForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const form = new FormData(e.target);
+      const res = await fetch('/reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: form.get('message'),
+          brand: form.get('brand')
+        })
+      });
+      const data = await res.json();
+      document.getElementById('replyOutput').textContent = data.reply || "Error";
+    }
+  </script>
+</body>
+</html>
