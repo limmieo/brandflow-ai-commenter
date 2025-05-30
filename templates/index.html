@@ -1,37 +1,135 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Auto Responder</title>
+  <meta charset="UTF-8">
+  <title>BrandFlow AI Responder</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 2em;
+      color: #ff4081;
+      margin-bottom: 30px;
+    }
+
+    form {
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 12px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 10px;
+      display: block;
+      text-align: left;
+    }
+
+    select, textarea, button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1em;
+      margin-top: 6px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 8px;
+    }
+
+    select, textarea {
+      background-color: #2c2c2c;
+      color: #ffffff;
+    }
+
+    button {
+      background-color: #ff4081;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #e13370;
+    }
+
+    #replyOutput {
+      background: #1e1e1e;
+      border-left: 4px solid #ff4081;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 1.1em;
+      white-space: pre-wrap;
+      margin-top: 20px;
+      text-align: left;
+    }
+  </style>
 </head>
 <body>
-  <h1>Test Auto-Reply</h1>
-  <form id="responderForm">
-    <label>Brand:
-      <select name="brand">
+
+  <div class="container">
+    <h1>💬 BrandFlow AI Reply Generator</h1>
+
+    <form id="responderForm">
+      <label for="type">Reply Type:</label>
+      <select id="type" name="type">
+        <option value="comment">Comment</option>
+        <option value="caption">Caption</option>
+        <option value="dm">DM</option>
+      </select>
+
+      <label for="brand">Brand Persona:</label>
+      <select id="brand" name="brand">
         <option value="yumi">Yumi</option>
         <option value="gym_baddie">Gym Baddie</option>
         <option value="polishedform">PolishedForm</option>
+        <option value="default">Default</option>
       </select>
-    </label><br><br>
-    <textarea name="message" placeholder="Paste DM or comment..." rows="5" cols="50"></textarea><br>
-    <button type="submit">Get Reply</button>
-  </form>
-  <p><strong>Generated Reply:</strong> <span id="replyOutput"></span></p>
+
+      <label for="message">Message or context:</label>
+      <textarea id="message" name="message" rows="5" placeholder="Paste the DM, comment, or caption context here..."></textarea>
+
+      <button type="submit">✨ Generate Reply</button>
+    </form>
+
+    <div id="replyOutput"></div>
+  </div>
 
   <script>
     document.getElementById('responderForm').onsubmit = async function(e) {
       e.preventDefault();
-      const form = new FormData(e.target);
+      const type = document.getElementById('type').value;
+      const brand = document.getElementById('brand').value;
+      const message = document.getElementById('message').value;
+      const promptKey = brand + '_' + type;
+
       const res = await fetch('/reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: form.get('message'),
-          brand: form.get('brand')
-        })
+        body: JSON.stringify({ message, brand: promptKey })
       });
+
       const data = await res.json();
-      document.getElementById('replyOutput').textContent = data.reply || "Error";
+      document.getElementById('replyOutput').textContent = data.reply || "Error generating reply.";
     }
   </script>
 </body>
